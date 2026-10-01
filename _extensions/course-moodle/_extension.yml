@@ -1,0 +1,9 @@
+title: Course Moodle P0 Export
+version: 0.0.1
+quarto-required: ">=1.11.5"
+contributes:
+  metadata:
+    course-moodle-p0:
+      package-contract: p0-native-ast-v1
+      entrypoint: entrypoints/export.ts
+      activation: explicit-script-only

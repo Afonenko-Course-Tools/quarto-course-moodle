@@ -1,0 +1,5 @@
+node_modules/
+output/
+*.xml
+content-package.json
+binding.json

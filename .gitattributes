@@ -1,0 +1,2 @@
+# Keep upstream license bytes exact, including CRLF, and accept their line endings.
+_extensions/course-moodle/vendor/*-LICENSE -text whitespace=cr-at-eol
