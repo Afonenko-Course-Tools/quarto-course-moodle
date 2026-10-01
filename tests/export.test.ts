@@ -2,14 +2,15 @@ import { exportMoodle } from "../_extensions/course-moodle/application/export.ts
 const assert = (x: unknown, m = "assertion failed") => {
   if (!x) throw Error(m);
 };
-const sample = () =>
-  JSON.parse(
-    Deno.env.get("P0_PACKAGE")
-      ? Deno.readTextFileSync(Deno.env.get("P0_PACKAGE")!)
-      : Deno.readTextFileSync(
-        "../../worktrees/core-export/tests/probes/export-boundary/fixtures/package.json",
-      ),
-  );
+const sample = () => {
+  const path = Deno.env.get("P0_PACKAGE");
+  if (!path) {
+    throw Error(
+      "P0_PACKAGE required: run CORE=/path/to/core bash tools/check.sh",
+    );
+  }
+  return JSON.parse(Deno.readTextFileSync(path));
+};
 const binding = { defaultGrade: 1, shuffle: false };
 Deno.test("native manual and single-choice package creates exactly two genuine XML questions", async () => {
   const xml = await exportMoodle(sample(), binding);

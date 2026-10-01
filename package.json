@@ -1,1 +1,1 @@
-{"name":"quarto-course-moodle-p0","private":true,"type":"module","scripts":{"build:vendor":"node tools/build-vendor.mjs","test":"deno test --allow-all tests"},"devDependencies":{"esbuild":"0.25.12","xmlbuilder2":"3.1.1"}}
+{"name":"quarto-course-moodle-p0","private":true,"type":"module","scripts":{"build:vendor":"node tools/build-vendor.mjs","test":"bash tools/check.sh"},"devDependencies":{"esbuild":"0.25.12","xmlbuilder2":"3.1.1"}}
