@@ -9,7 +9,11 @@ import {
 } from "../infrastructure/transport.ts";
 export async function exportMoodle(p: any, binding: any): Promise<string> {
   validatePackage(p);
-  if (!(binding?.defaultGrade > 0) || typeof binding.shuffle !== "boolean") {
+  if (
+    typeof binding?.defaultGrade !== "number" ||
+    !Number.isFinite(binding.defaultGrade) || binding.defaultGrade <= 0 ||
+    typeof binding.shuffle !== "boolean"
+  ) {
     fail("explicit defaultGrade and shuffle binding required");
   }
   for (const q of p.questions) {

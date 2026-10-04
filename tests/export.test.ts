@@ -12,6 +12,45 @@ const sample = () => {
   return JSON.parse(Deno.readTextFileSync(path));
 };
 const binding = { defaultGrade: 1, shuffle: false };
+for (
+  const [label, defaultGrade] of [
+    ["numeric string", "1"],
+    ["Infinity", Infinity],
+    ["NaN", NaN],
+    ["zero", 0],
+    ["negative", -1],
+    ["boolean", true],
+    ["array", [1]],
+    ["null", null],
+    ["missing", undefined],
+  ]
+) {
+  Deno.test(`defaultGrade rejects ${label} with ADAPTER before returning XML`, async () => {
+    let rejected = false;
+    try {
+      await exportMoodle(sample(), { ...binding, defaultGrade });
+    } catch (e) {
+      rejected = String(e).includes("ADAPTER");
+    }
+    assert(rejected, `${label} must reject with ADAPTER`);
+  });
+}
+Deno.test("defaultGrade preserves finite positive numeric grades in parsed XML", async () => {
+  for (const defaultGrade of [1, 0.5, 2.5]) {
+    const xml = await exportMoodle(sample(), { ...binding, defaultGrade });
+    const parsed = await new Deno.Command("python3", {
+      args: [
+        "-c",
+        'import sys,xml.etree.ElementTree as E; q=E.fromstring(sys.argv[1]).findall("question"); assert len(q)==2; assert all(x.findtext("defaultgrade")==sys.argv[2] for x in q)',
+        xml,
+        String(defaultGrade),
+      ],
+      stdout: "piped",
+      stderr: "piped",
+    }).output();
+    assert(parsed.success, `numeric grade ${defaultGrade} was not preserved`);
+  }
+});
 Deno.test("native manual and single-choice package creates exactly two genuine XML questions", async () => {
   const xml = await exportMoodle(sample(), binding);
   assert(xml.startsWith("<?xml"));

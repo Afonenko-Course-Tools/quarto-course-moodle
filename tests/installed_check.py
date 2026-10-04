@@ -75,10 +75,17 @@ def check(repo, package):
         }
         assert attachments == {r["target"]: base64.b64decode(r["data"], validate=True) for r in payload["resources"]}
         # Exercise the installed CLI's failure path, not just its imported function.
-        (consumer / "binding.json").write_text("{}\n")
-        rejected = subprocess.run(command + ["rejected.xml"], cwd=consumer, env=env, capture_output=True, text=True)
-        assert rejected.returncode != 0 and "ADAPTER" in rejected.stderr, rejected.stderr
-        assert not (consumer / "rejected.xml").exists(), "failed CLI wrote output"
+        for binding in (
+            "{}",
+            '{"defaultGrade":"1","shuffle":false}',
+            '{"defaultGrade":1e400,"shuffle":false}',
+            '{"defaultGrade":0,"shuffle":false}',
+            '{"defaultGrade":-1,"shuffle":false}',
+        ):
+            (consumer / "binding.json").write_text(binding + "\n")
+            rejected = subprocess.run(command + ["rejected.xml"], cwd=consumer, env=env, capture_output=True, text=True)
+            assert rejected.returncode != 0 and "ADAPTER" in rejected.stderr, (binding, rejected.stderr)
+            assert not (consumer / "rejected.xml").exists(), "failed CLI wrote output"
         assert not list(consumer.rglob("node_modules")), "runtime created node_modules"
     print("PASS: installed bytes, entrypoint, canonical XML, attachments and fail-before-output")
 
