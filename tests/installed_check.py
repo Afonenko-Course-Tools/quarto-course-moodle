@@ -32,7 +32,7 @@ def verify_installed(source, installed):
 
 def check(repo, package):
     payload = json.loads(package.read_text())
-    assert payload["experimental"] == "p0-native-ast-v1"
+    assert payload["schema"] == "course-body-package-v1"
     assert [q["key"] for q in payload["questions"]] == [
         "course-a/exr-manual", "course-a/exr-choice"
     ]
