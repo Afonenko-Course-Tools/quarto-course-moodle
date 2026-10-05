@@ -24,12 +24,14 @@ export async function exportMoodle(p: any, binding: any): Promise<string> {
     validateBody(q.publicAnswer, p.resources);
     if (
       q.answerType === "single-choice" &&
-      (q.publicAnswer.length !== 1 || q.publicAnswer[0].t !== "BulletList" ||
+      (q.publicAnswer.length !== 1 || q.publicAnswer[0]?.t !== "BulletList" ||
+        !Array.isArray(q.publicAnswer[0]?.c) ||
         !Number.isInteger(q.closedKey?.correct) || q.closedKey.correct < 0 ||
         q.closedKey.correct >= q.publicAnswer[0].c.length ||
         q.publicAnswer[0].c.length < 2 ||
         q.publicAnswer[0].c.some((choice: any) =>
-          !Array.isArray(choice) || !choice.length
+          !Array.isArray(choice) || !choice.length ||
+          choice.some((node: any) => !node || typeof node.t !== "string")
         ))
     ) fail("invalid single-choice mapping");
   }

@@ -37,3 +37,29 @@ Deno.test("Moodle malformed single choice rejects clear adapter error", async ()
     assert(failed, "malformed key accepted");
   }
 });
+
+Deno.test("Moodle malformed native choice lists refuse with ADAPTER before XML", async () => {
+  for (
+    const content of [null, {}, [null], [], [[null]], [[{
+      t: "Para",
+      c: [{ t: "Str", c: "A" }],
+    }], null]]
+  ) {
+    const p: any = sample();
+    Object.assign(p.questions[0], {
+      answerType: "single-choice",
+      closedKey: { correct: 0 },
+      publicAnswer: [{ t: "BulletList", c: content }],
+    });
+    let refused = false;
+    try {
+      await exportMoodle(p, { defaultGrade: 1, shuffle: false });
+    } catch (e) {
+      refused = String(e).includes("ADAPTER");
+    }
+    assert(
+      refused,
+      "malformed native choice was not an explicit ADAPTER refusal",
+    );
+  }
+});
