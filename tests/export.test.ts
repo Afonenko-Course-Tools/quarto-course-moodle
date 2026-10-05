@@ -3,10 +3,10 @@ const assert = (x: unknown, m = "assertion failed") => {
   if (!x) throw Error(m);
 };
 const sample = () => {
-  const path = Deno.env.get("P0_PACKAGE");
+  const path = Deno.env.get("BODY_PACKAGE");
   if (!path) {
     throw Error(
-      "P0_PACKAGE required: run CORE=/path/to/core bash tools/check.sh",
+      "BODY_PACKAGE required: run CORE=/path/to/core bash tools/check.sh",
     );
   }
   return JSON.parse(Deno.readTextFileSync(path));
@@ -135,7 +135,7 @@ Deno.test("review: XML attachments select exact native targets not prose or pref
   });
   const xml = await exportMoodle(p, binding);
   assert(!xml.includes('name="data"') && !xml.includes('name="prose.txt"'));
-  assert(xml.includes('name="data.txt"'));
+  assert(xml.includes('name="' + p.resources[0].target.split("/").pop() + '"'));
 });
 Deno.test("review: Moodle rejects destination aliases before XML", async () => {
   for (

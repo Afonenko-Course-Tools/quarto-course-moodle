@@ -20,13 +20,19 @@ export async function exportMoodle(p: any, binding: any): Promise<string> {
     if (!["manual", "single-choice"].includes(q.answerType)) {
       fail("unsupported answer type " + q.answerType);
     }
-    validateBody(q.condition, p);
-    validateBody(q.publicAnswer, p);
+    validateBody(q.condition, p.resources);
+    validateBody(q.publicAnswer, p.resources);
     if (
       q.answerType === "single-choice" &&
-      (q.publicAnswer.length !== 1 || q.publicAnswer[0].t !== "BulletList" ||
+      (q.publicAnswer.length !== 1 || q.publicAnswer[0]?.t !== "BulletList" ||
+        !Array.isArray(q.publicAnswer[0]?.c) ||
         !Number.isInteger(q.closedKey?.correct) || q.closedKey.correct < 0 ||
-        q.closedKey.correct >= q.publicAnswer[0].c.length)
+        q.closedKey.correct >= q.publicAnswer[0].c.length ||
+        q.publicAnswer[0].c.length < 2 ||
+        q.publicAnswer[0].c.some((choice: any) =>
+          !Array.isArray(choice) || !choice.length ||
+          choice.some((node: any) => !node || typeof node.t !== "string")
+        ))
     ) fail("invalid single-choice mapping");
   }
   await verifyResources(p);
@@ -34,6 +40,7 @@ export async function exportMoodle(p: any, binding: any): Promise<string> {
     const b = structuredClone(blocks);
     const map = (v: any) => {
       if (!v || typeof v !== "object") return;
+      if (v.t === "Header") v.c[1][0] = "";
       if (v.t === "Image" || v.t === "Link") {
         const r = p.resources.find((r: any) => r.target === v.c[2][0]);
         if (r) v.c[2][0] = "@@PLUGINFILE@@/" + r.target;
