@@ -1,14 +1,25 @@
-# Quarto Course Moodle — экспериментальный P0
+# Quarto Course Moodle — экспериментальный XML-экспорт
 
 Узкий работающий экспортёр **XML-банка вопросов** из явно переданного пакета `p0-native-ast-v1`. Поддерживает ручной ответ essay и single-choice. Это проверка границы содержимого, а не производственное расширение Core и не подтверждение совместимости с установленным Moodle. Потребитель не читает исходные QMD, HTML сайта или тела QRC.
 
+## Граница возможностей
+
+Экспорт создаёт XML-банк вопросов и вложений для преподавателя. Он не создаёт
+Quiz/Assignment, не загружает файл в Moodle и не принимает студенческие ответы.
+Настоящий импорт, доступность вложений, попытки и итоговые оценки требуют
+проверки на целевом сервере. Текущий экспортёр принимает только экспериментальный
+`p0-native-ast-v1`; производственный `course-body-package-v1` Core/Print не является
+его входным контрактом. Новые формы ответов не включаются автоматически при
+обновлении Core.
+
 ## Получение общего входного пакета
 
-Для производителя нужны Quarto и CUE в PATH. В переменной `CORE` укажите распакованный исходный репозиторий Core — каталог с `tests/probes/export-boundary`. Из каталога этого адаптера выполните:
+Для производителя нужны Quarto, CUE и отдельная установка Deno в PATH. CI использует экспериментальный производитель из [companion Core PR #8](https://github.com/Afonenko-Course-Tools/quarto-course/pull/8), строго commit `4f5caf9a15b9bd36476cad8a646e81521fbd29d1`. Это фиксированный источник тестового корпуса, а не зависимость установленного экспортёра и не обещание стабильного API Core. В `CORE` укажите чистый checkout этой ревизии. Из каталога адаптера выполните:
 
 ```sh
-CORE=/absolute/path/to/extracted/core-source
-deno run --allow-read --allow-write --allow-run --allow-env \
+CORE=../core-moodle-fixture
+deno run --no-config --no-lock --no-npm --cached-only --deny-net \
+  --allow-read --allow-write --allow-run --allow-env \
   "$CORE/tests/probes/export-boundary/package.ts" \
   "$CORE/tests/probes/export-boundary/fixtures/corpus.qmd" "$PWD/content-package.json" \
   "$CORE/tests/probes/export-boundary/fixtures/work-one.qmd" \
@@ -19,16 +30,18 @@ deno run --allow-read --allow-write --allow-run --allow-env \
 
 ## Экспорт и проверка
 
-Проверены Deno **2.7.14**, Quarto **1.11.5** с Pandoc **3.10**; производитель использует CUE **0.17.1**. Нужные runtime-библиотеки включены локально: npm install и сеть при экспорте не требуются.
+Исходный эксперимент рассчитан на Deno **2.7.14**, Quarto **1.11.5** с Pandoc **3.10** и CUE **0.17.1**. Сценарий ниже проверяет фактически установленный канал Quarto; минимальная версия в манифесте — **1.10.18**. Нужные runtime-библиотеки включены локально: npm install и сеть при экспорте не требуются.
 
 ```sh
 printf '{"defaultGrade":1,"shuffle":false}\n' > binding.json
-deno run --allow-read --allow-write --allow-run --allow-env \
+deno run --no-config --no-lock --no-npm --cached-only --deny-net \
+  --allow-read --allow-write --allow-run --allow-env \
   _extensions/course-moodle/entrypoints/export.ts content-package.json binding.json bank.xml
-P0_PACKAGE="$PWD/content-package.json" deno test --allow-all tests
+P0_PACKAGE="$PWD/content-package.json" deno test --no-config --no-lock --no-npm \
+  --cached-only --deny-net --allow-read --allow-write --allow-run --allow-env tests/export.test.ts
 ```
 
-Поля привязки `defaultGrade` (положительное число) и `shuffle` (boolean) обязательны. Тесты используют стандартный XML-парсер Python 3. Название/idnumber вопроса берётся из `owner/id`, а не из физического пути QMD. XML предназначен преподавателю: он содержит платформенную правильность/доли оценивания; решения и grading-notes эта проба не выпускает.
+Поля привязки `defaultGrade` (конечное положительное число, без приведения строк или boolean) и `shuffle` (boolean) обязательны. Тесты используют стандартный XML-парсер Python 3. Название/idnumber вопроса берётся из `owner/id`, а не из физического пути QMD. XML предназначен преподавателю: он содержит платформенную правильность/доли оценивания; решения и grading-notes эта проба не выпускает.
 
 | Возможность | Фактическая граница P0 |
 | - | - |
@@ -45,13 +58,20 @@ P0_PACKAGE="$PWD/content-package.json" deno test --allow-all tests
 
 ## Установка и пересборка зависимостей
 
-В чистом каталоге потребителя проверена локальная установка:
+В каталоге потребителя:
 
 ```sh
-quarto add /absolute/path/to/quarto-course-moodle --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-moodle --no-prompt
 ```
 
-Установленная копия entrypoint выполнена без node_modules и с запретом сети. Манифест содержит описание экспериментального контракта; запуск остаётся явной командой, автоматического производственного render-hook нет.
+Локальный checkout рядом с потребителем устанавливается командой
+`quarto add ../quarto-course-moodle --no-prompt`. После установки из GitHub
+entrypoint находится в
+`_extensions/Afonenko-Course-Tools/course-moodle/entrypoints/export.ts`;
+локальная установка может использовать короткий путь `_extensions/course-moodle/`.
+Примеры экспорта выше выполняются из checkout адаптера.
+
+Установленная копия entrypoint проверяется без `node_modules`, с пустым отдельным `DENO_DIR`, отключённым npm-разрешением и `--deny-net`. Этот флаг запрещает сеть самому Deno; запущенный через `--allow-run=quarto` процесс Quarto/Pandoc не получает такую изоляцию автоматически. Проверка не заявляет сетевую песочницу всего дерева процессов. Манифест содержит описание экспериментального контракта; запуск остаётся явной командой, автоматического производственного render-hook нет.
 
 Только для разработчика:
 
@@ -60,6 +80,27 @@ npm ci --ignore-scripts
 npm run build:vendor
 ```
 
-`xmlbuilder2` **3.1.1** и транзитивные библиотеки поставляются локальным bundle. Версии закреплены lockfile, точные исходные лицензии и их имена перечислены в `vendor/README.md`. Node/npm/esbuild нужны только для пересборки. Производственная схема Core не изменяется.
+`xmlbuilder2` **3.1.1** и транзитивные библиотеки поставляются локальным bundle. Версии закреплены lockfile, точные исходные лицензии и их имена перечислены в
+[описании включённых библиотек](_extensions/course-moodle/vendor/README.md). Node/npm/esbuild нужны только для пересборки. Производственная схема Core не изменяется.
 
-Официальные источники проверены 2026-10-01: [Moodle XML, документация 5.2](https://docs.moodle.org/502/en/Moodle_XML_format), [Pandoc](https://pandoc.org/MANUAL.html). Документация формата не заменяет roundtrip на целевой установке.
+## Воспроизводимая проверка checkout и установленной поставки
+
+Нужны Git, Bash, Python 3 (только стандартная библиотека), Quarto, CUE **0.17.1** и Deno **2.7.14** в PATH. Используйте [официальную установку Deno](https://docs.deno.com/runtime/getting_started/installation/); внутренние пути инструментов Quarto не используются. Node/npm не нужны для этих проверок или для установленного экспортёра.
+
+```sh
+git clone https://github.com/Afonenko-Course-Tools/quarto-course.git ../core-moodle-fixture
+git -C ../core-moodle-fixture checkout --detach 4f5caf9a15b9bd36476cad8a646e81521fbd29d1
+CORE=../core-moodle-fixture bash tools/check.sh
+```
+
+Если Node/npm уже установлены, `CORE=../core-moodle-fixture npm test` вызывает тот же сценарий. Неверная ревизия или изменённый Core останавливают проверку. Сценарий не скачивает исходники и не использует соседний developer checkout по умолчанию: отдельные тесты требуют явный `P0_PACKAGE`.
+
+Сценарий записывает версии, заново строит пакет из `corpus.qmd`, `work-one.qmd`, `work-two.qmd`, запускает все тесты адаптера с `--deny-net`, проверки контроля установленных байтов и настоящий `quarto add` в новом временном каталоге. Сравниваются список файлов и точные байты расширения, включая vendor и entrypoint; символьные ссылки в файлах, корне расширения и его пути отклоняются. Базовый временный каталог канонизируется до установки, поэтому штатный системный alias временного каталога не подменяет проверяемую границу. Затем установленный entrypoint читает только скопированный пакет и привязку. Python разбирает XML и проверяет два канонических вопроса, общий вопрос обеих работ, доли вариантов, точные байты вложений и отсутствие закрытых решений. Неверная привязка должна завершить установленный CLI с `ADAPTER`, не создав XML. Временные пакет, consumer и кэш удаляются после проверки.
+
+Workflow `.github/workflows/ci.yml` запускает этот же сценарий для каналов Quarto `release` и `pre-release`, без пропуска тестов и без публикации. Companion Core checkout закреплён полным SHA; GitHub Actions также закреплены SHA. Каналы Quarto меняются со временем, поэтому это матрица совместимости с записью фактических версий, а не полностью замороженный образ среды. Манифест расширения задаёт `quarto-required: >=1.10.18`. Сценарий каждого
+канала проверяет установленный entrypoint и экспорт; неподходящая версия или
+ошибка установки завершает job неуспешно. CI использует поддерживаемый `denoland/setup-deno`, независимо от встроенных инструментов Quarto.
+
+Эта проверка подтверждает установленную поставку текущего ограниченного XML-адаптера. Она не выполняет импорт на сервер Moodle, не проверяет создание Quiz/Assignment и не расширяет заявленную совместимость LMS.
+
+Документация формата и writer: [Moodle XML, документация 5.2](https://docs.moodle.org/502/en/Moodle_XML_format), [Pandoc](https://pandoc.org/MANUAL.html). Документация формата не заменяет roundtrip на целевой установке.

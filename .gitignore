@@ -3,3 +3,4 @@ output/
 *.xml
 content-package.json
 binding.json
+__pycache__/
