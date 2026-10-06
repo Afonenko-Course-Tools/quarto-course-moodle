@@ -1,3 +1,4 @@
+import { children, quiz, text } from "./xml.ts";
 import { exportMoodle } from "../_extensions/course-moodle/application/export.ts";
 const assert = (x: unknown, m = "assertion failed") => {
   if (!x) throw Error(m);
@@ -38,17 +39,12 @@ for (
 Deno.test("defaultGrade preserves finite positive numeric grades in parsed XML", async () => {
   for (const defaultGrade of [1, 0.5, 2.5]) {
     const xml = await exportMoodle(sample(), { ...binding, defaultGrade });
-    const parsed = await new Deno.Command("python3", {
-      args: [
-        "-c",
-        'import sys,xml.etree.ElementTree as E; q=E.fromstring(sys.argv[1]).findall("question"); assert len(q)==2; assert all(x.findtext("defaultgrade")==sys.argv[2] for x in q)',
-        xml,
-        String(defaultGrade),
-      ],
-      stdout: "piped",
-      stderr: "piped",
-    }).output();
-    assert(parsed.success, `numeric grade ${defaultGrade} was not preserved`);
+    const questions = children(quiz(xml), "question");
+    assert(questions.length === 2, "XML question count changed");
+    assert(
+      questions.every((q) => text(q, "defaultgrade") === String(defaultGrade)),
+      `numeric grade ${defaultGrade} was not preserved`,
+    );
   }
 });
 Deno.test("native manual and single-choice package creates exactly two genuine XML questions", async () => {
@@ -60,16 +56,9 @@ Deno.test("native manual and single-choice package creates exactly two genuine X
   assert(xml.includes("@@PLUGINFILE@@"));
   assert(xml.includes("{{literal}}"));
   assert(!xml.includes("TEACHER_SECRET") && !xml.includes("GRADING_SECRET"));
-  const p = new Deno.Command("python3", {
-    args: [
-      "-c",
-      'import sys,xml.etree.ElementTree as E; r=E.fromstring(sys.argv[1]); assert len(r.findall("question"))==2; assert "TLS" in r.findall("question")[1].findall("answer")[1].find("text").text',
-      xml,
-    ],
-    stdout: "piped",
-    stderr: "piped",
-  });
-  assert((await p.output()).success, "standard XML parser rejected output");
+  const questions = children(quiz(xml), "question");
+  assert(questions.length === 2, "XML question count changed");
+  assert(text(children(questions[1], "answer")[1], "text").includes("TLS"));
 });
 Deno.test("unsupported answer binding body and resource collision fail ADAPTER before output", async () => {
   const cases = [
@@ -113,16 +102,10 @@ Deno.test("resources used inside answer choices are attached to that question", 
     }],
   }];
   const xml = await exportMoodle(p, binding);
-  const o = await new Deno.Command("python3", {
-    args: [
-      "-c",
-      'import sys,xml.etree.ElementTree as E;r=E.fromstring(sys.argv[1]);assert len(r.findall("question")[1].find("questiontext").findall("file"))==1',
-      xml,
-    ],
-    stdout: "piped",
-    stderr: "piped",
-  }).output();
-  assert(o.success);
+  const questions = children(quiz(xml), "question");
+  assert(
+    children(children(questions[1], "questiontext")[0], "file").length === 1,
+  );
 });
 Deno.test("review: XML attachments select exact native targets not prose or prefix matches", async () => {
   const p = sample();
