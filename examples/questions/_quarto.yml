@@ -1,0 +1,17 @@
+project:
+  type: website
+  output-dir: _site
+  render: [index.qmd]
+  resources: [artifacts/**]
+website:
+  title: Moodle question bank
+  repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-moodle
+  repo-subdir: examples/questions
+  repo-actions: [source]
+  repo-branch: v0.2.0
+format: html
+course:
+  id: demo-moodle
+profile:
+  default: full
+  group: [[student, full]]

@@ -4,3 +4,6 @@ output/
 content-package.json
 binding.json
 __pycache__/
+
+# Authored platform binding belongs to the complete demo group.
+!examples/questions/binding.json
