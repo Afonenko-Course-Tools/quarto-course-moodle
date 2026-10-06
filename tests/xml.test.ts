@@ -5,6 +5,14 @@ import { exportMoodle } from "../_extensions/course-moodle/application/export.ts
 
 for (
   const [label, xml] of [
+    ["prefixed element", "<quiz><p:x/></quiz>"],
+    ["prefixed attribute", '<quiz p:x="one"/>'],
+    ["default namespace declaration", '<quiz xmlns="urn:example"/>'],
+    ["prefix namespace declaration", '<quiz xmlns:p="urn:example"/>'],
+    [
+      "XML declaration attributes out of order",
+      '<?xml version="1.0" standalone="yes" encoding="UTF-8"?><quiz/>',
+    ],
     ["mismatched closing tag", "<quiz><question></wrong></quiz>"],
     ["unclosed question", "<quiz><question></quiz>"],
     ["unclosed root", "<quiz><question/>"],
@@ -39,7 +47,7 @@ for (
     } catch {
       rejected = true;
     }
-    assert(rejected, `Malformed XML accepted: ${label}`);
+    assert(rejected, `Unsupported or malformed bank XML accepted: ${label}`);
   });
 }
 
@@ -55,4 +63,15 @@ Deno.test("strict original XML gate accepts a real generated Moodle bank", async
   const questions = children(quiz(xml), "question");
   assert(questions.length === 1);
   assert(text(questions[0], "idnumber") === "course-a/exr-manual");
+});
+
+Deno.test("XML declaration accepts only ordered optional encoding and standalone", () => {
+  for (
+    const declaration of [
+      'version="1.0"',
+      'version="1.0" encoding="UTF-8"',
+      'version="1.0" standalone="yes"',
+      'version="1.0" encoding="UTF-8" standalone="no"',
+    ]
+  ) quiz(`<?xml ${declaration}?><quiz/>`);
 });

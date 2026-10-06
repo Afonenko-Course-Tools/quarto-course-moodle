@@ -3,7 +3,8 @@ import { assert } from "./support.ts";
 // A test-only XML 1.0 gate for the generated Moodle bank vocabulary. The bundled
 // DOM parser repairs malformed input, so validate the original text before it.
 // DTDs and custom entities are deliberately unsupported by this transport.
-const name = "[A-Za-z_:][A-Za-z0-9_.:-]*";
+// Generated banks contain no namespace declarations or qualified names.
+const name = "[A-Za-z_][A-Za-z0-9_.-]*";
 function fail(message: string): never {
   throw Error(`XML well-formedness: ${message}`);
 }
@@ -43,6 +44,7 @@ function attributes(source: string): Map<string, string> {
     );
     if (!matched) fail("attribute must have a quoted value");
     const key = matched[1], quote = matched[2];
+    if (key === "xmlns") fail("namespaces are unsupported in generated banks");
     if (values.has(key)) fail(`duplicate attribute ${key}`);
     const end = source.indexOf(quote, matched[0].length);
     if (end === -1) fail("unclosed attribute quote");
@@ -121,10 +123,14 @@ export function assertWellFormed(xml: string) {
           attrs.get("version") !== "1.0" || [...attrs.keys()][0] !== "version"
         ) fail("invalid XML 1.0 declaration");
         if (
-          [...attrs.keys()].some((key) =>
-            !["version", "encoding", "standalone"].includes(key)
+          !/^version(?:,encoding)?(?:,standalone)?$/.test(
+            [...attrs.keys()].join(","),
           )
-        ) fail("invalid XML declaration attribute");
+        ) {
+          fail(
+            "XML declaration requires version[,encoding][,standalone] order",
+          );
+        }
         const encoding = attrs.get("encoding"),
           standalone = attrs.get("standalone");
         if (
