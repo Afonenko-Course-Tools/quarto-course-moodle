@@ -63,3 +63,32 @@ Deno.test("Moodle malformed native choice lists refuse with ADAPTER before XML",
     );
   }
 });
+
+Deno.test("Moodle accepts task requirements and ungraded handout without creating activities", async () => {
+  const p: any = sample();
+  p.works[0].kind = "handout";
+  p.works[0].requirements = { "exr-manual": "optional" };
+  const xml = await exportMoodle(p, { defaultGrade: 1, shuffle: false });
+  assert(
+    xml.includes('type="essay"') && !xml.includes("assessment"),
+    "work metadata became an LMS activity",
+  );
+});
+Deno.test("Moodle rejects task requirements outside selected membership", async () => {
+  const p: any = sample();
+  p.works[0].requirements = { "exr-absent": "optional" };
+  let refused = false;
+  try {
+    await exportMoodle(p, { defaultGrade: 1, shuffle: false });
+  } catch (e) {
+    refused = String(e).includes("ADAPTER");
+  }
+  assert(refused, "foreign member requirement accepted");
+});
+Deno.test("Moodle accepts explicit work ID independent from section prefix", async () => {
+  const p: any = sample();
+  p.works[0].id = "lab-one";
+  p.works[0].key = "course-a/lab-one";
+  const xml = await exportMoodle(p, { defaultGrade: 1, shuffle: false });
+  assert(xml.includes("course-a/exr-manual"), "canonical question missing");
+});

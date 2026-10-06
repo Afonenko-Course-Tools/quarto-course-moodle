@@ -24,9 +24,8 @@ async function check(repo: string, packagePath: string) {
       Object.fromEntries(payload.works.map((w: any) => [w.key, w.items])),
     ) === JSON.stringify({
       "course-a/sec-work-one": ["course-a/exr-manual", "course-a/exr-choice"],
-      "course-a/sec-work-two": ["course-a/exr-manual"],
     }),
-    "fixture works must share the canonical question",
+    "fixture contains only the explicitly selected work",
   );
   const consumer = await Deno.realPath(
     await Deno.makeTempDir({ prefix: "moodle-consumer-" }),

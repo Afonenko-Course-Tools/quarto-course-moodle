@@ -1,0 +1,16 @@
+---
+code-links:
+  - text: Source example folder
+    icon: github
+    href: https://github.com/Afonenko-Course-Tools/quarto-course-moodle/tree/v0.2.0/examples/questions
+---
+
+# Moodle question bank
+
+One bank, two fixed work assignments and an unassigned exercise. Control QMD
+is excluded from the student website but selected export receives its condition.
+Demonstration full answers are intentionally public in source and local full render.
+
+[Variant A XML](artifacts/variant-a.xml)
+
+[Variant B XML](artifacts/variant-b.xml)

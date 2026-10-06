@@ -1,9 +1,9 @@
 # Quarto Course Moodle
 
-Moodle exports an XML question bank from the current native Core `course-body-package-v1` teacher package. Require a successful ordinary Quarto render, load the explicit current NativeRun and call `buildBodies(result, {projectRoot, includeClosed: true})` on full-view results. Pass `package` to Moodle; Print and student downloads receive `publicPackage` instead.
+Moodle exports an XML question bank from the current native Core `course-body-package-v1` teacher package. Use Core `collectExport(courseRoot, {book, work, profiles})`, then `buildBodies(result, {projectRoot, courseId, work, includeClosed:true})`. Pass teacher `package` to Moodle; Print receives `publicPackage`. Root course identity is declared once. Full source capture includes control QMD omitted from student HTML and requires no full HTML render.
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.1.1 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.0 --no-prompt
 deno run --allow-read --allow-write --allow-run=quarto --allow-env \
   _extensions/Afonenko-Course-Tools/course-moodle/entrypoints/export.ts \
   teacher-package.json binding.json bank.xml
@@ -21,4 +21,15 @@ The check installs actual payloads, renders authored native full/student example
 
 ## Release installation
 
-Release `v0.1.1` matches the version in `_extension.yml`. Install the explicit tag shown above and commit the installed `_extensions` files in the course repository. To upgrade, install the next published tag with `quarto add`, review the changes and run the course checks. Published tags are immutable; corrections receive a new version and tag.
+Release `v0.2.0` matches the version in `_extension.yml`. Install the explicit tag shown above and commit the installed `_extensions` files in the course repository. To upgrade, install the next published tag with `quarto add`, review the changes and run the course checks. Published tags are immutable; corrections receive a new version and tag.
+
+
+## Shared task assignments
+
+Works use one authored `.task-items` list. The transport preserves `items`
+canonical keys and optional `requirements` keyed by local `exr-*` ID, with
+`required` or `optional` values. A lab/test/exam defaults to required; handout
+is an ungraded selection. Additional tasks do not replace required tasks.
+Moodle imports questions only; work metadata does not create assessments or
+translate requirements into a platform grade rule. See the
+[self-contained question demo](examples/questions/README.md).
