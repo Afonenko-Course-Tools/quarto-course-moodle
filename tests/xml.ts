@@ -1,8 +1,10 @@
+import { assertWellFormed } from "./xml-wellformed.ts";
 import { create } from "../_extensions/course-moodle/vendor/xmlbuilder2.js";
 import { assert } from "./support.ts";
 
 /** Parse using the XML DOM already bundled with the adapter, without npm or Python. */
 export function quiz(xml: string): any {
+  assertWellFormed(xml);
   const root = create(xml).node.documentElement;
   assert(root?.tagName === "quiz", "XML root is not quiz");
   return root;
