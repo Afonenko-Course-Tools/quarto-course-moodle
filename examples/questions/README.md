@@ -1,20 +1,60 @@
-# Moodle question bank
+# Банк вопросов Moodle
 
-From this folder install Core into the bank and the adapter into the course root:
+В этой папке установите Core в банк, а адаптер — в корень курса:
 
 ```sh
 cd bank
-quarto add Afonenko-Course-Tools/quarto-course@v3.0.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course@v3.0.2 --no-prompt
 cd ..
-quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.1 --no-prompt
 quarto run build.ts
 ```
 
-The group pins these releases. Local source checks run `CORE=/absolute/path/to/quarto-course bash tools/check-demo.sh`
-from the producer repository root. The course ID is declared once at
-the course root; export explicitly selects `bank` and each variant. Default
-`full` is a demo policy. No live LMS exchange is claimed. Sources/resources
-inside this folder are sufficient; central documentation receives ready output.
+Группа закрепляет эти выпуски. Для локальной проверки исходников выполните
+`CORE=/absolute/path/to/quarto-course bash tools/check-demo.sh` из корня
+репозитория адаптера. Идентификатор курса объявлен один раз в корне; экспорт
+явно выбирает `bank` и каждый вариант. Профиль `full` по умолчанию — политика
+демонстрации. Примеры и ресурсы этой папки достаточны для сборки, а центральная
+документация получает готовый результат.
 
-The ready artifact is published separately in immutable release `demo-20261007`
-from the same merged revision. `BUILD.json` records the exact commit and dependencies.
+Публичные условия экспортируются из teacher Body. Решения и заметки преподавателя
+доступны в исходной демонстрации для изучения, но не попадают в XML. Контрольное
+условие входит в выбранную работу, хотя исключено из student HTML. Дополнительное
+контрольное задание не заменяет обязательное. См. [диагностику](../../docs/diagnostics.md).
+
+Готовый артефакт публикуется отдельно в неизменяемом выпуске `demo-20261007-ru2`
+из той же merged-ревизии. `BUILD.json` записывает точный commit и зависимости.
+Локальная сборка проверяет XML и HTML; обмен с действующей LMS и фактический
+импорт в Moodle не подтверждаются.
+
+## Профили банка
+
+Student содержит общие главы `index.qmd` и `corpus.qmd`. Full добавляет
+контрольный набор и два варианта работы и остаётся профилем по умолчанию
+для выбранного экспорта. Списки Quarto объединяются: student не пытается
+заменить полный список сокращённым массивом.
+
+```sh
+cd bank
+quarto render --profile student
+quarto render --profile full
+quarto render --profile student
+```
+
+Готовые книги находятся отдельно: `_book/student` и `_book/full`. При повторном
+переходе к student в его дереве, навигации и поиске отсутствуют контрольное
+условие и варианты full. Выбранный экспорт из корня группы получает full Body
+и teacher-ключ ответа для XML независимо от последнего просмотренного профиля.
+
+Регрессия входит в обычную проверку `tools/check-demo.sh`: native профили
+проверяются перед единственной сборкой группы. Отдельный запуск из корня
+репозитория на установленных зависимостях:
+
+```sh
+quarto run tests/demo-profiles.ts moodle \
+  /absolute/path/to/examples/questions /tmp/moodle-profile-proof
+```
+
+Этот тест проверяет
+native inspect, student → full → student и выбранный ROOT-экспорт на
+установленных зависимостях.

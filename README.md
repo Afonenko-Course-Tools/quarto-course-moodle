@@ -1,35 +1,64 @@
 # Quarto Course Moodle
 
-Moodle exports an XML question bank from the current native Core `course-body-package-v1` teacher package. Use Core `collectExport(courseRoot, {book, work, profiles})`, then `buildBodies(result, {projectRoot, courseId, work, includeClosed:true})`. Pass teacher `package` to Moodle; Print receives `publicPackage`. Root course identity is declared once. Full source capture includes control QMD omitted from student HTML and requires no full HTML render.
+Moodle создаёт XML-банк вопросов из актуального teacher-пакета Core
+`course-body-package-v1`. Сначала вызовите
+`collectExport(courseRoot, {book, work, profiles})`, затем
+`buildBodies(result, {projectRoot, courseId, work, includeClosed:true})`.
+Передайте Moodle результат `package`; Print использует `publicPackage`.
+Идентификатор курса объявляется один раз в корне. Полный сбор исходников
+включает контрольные QMD, скрытые в student HTML, и не требует полного HTML-рендера.
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.1 --no-prompt
 deno run --allow-read --allow-write --allow-run=quarto --allow-env \
   _extensions/Afonenko-Course-Tools/course-moodle/entrypoints/export.ts \
   teacher-package.json binding.json bank.xml
 ```
 
-The command uses the GitHub installation path; local installation may use `_extensions/course-moodle`. Use the path actually created by Quarto. Binding requires positive finite numeric `defaultGrade` and boolean `shuffle`. Manual questions export as essays; single-choice questions require at least two native options and one valid integer `closedKey.correct`, exporting 100/0 fractions. Numeric, multipart and matching grading remain unsupported and fail clearly with `ADAPTER`. The old experimental P0 transport is unsupported.
+Команда показывает путь установки с GitHub. Локальная установка может создать
+`_extensions/course-moodle`: используйте фактический путь Quarto.
+В binding обязательны положительное конечное число `defaultGrade` и boolean
+`shuffle`. Вопросы `manual` становятся essay. Для `single-choice` требуются
+не менее двух native вариантов и целый допустимый `closedKey.correct`;
+доли оценки составляют 100/0. Типы `numeric`, `multipart` и `matching`
+не поддерживаются и отклоняются с `ADAPTER`. Старый экспериментальный P0-контракт
+не поддерживается. См. [справочник диагностики](docs/diagnostics.md).
 
-Only public conditions and public answer options become XML. Solutions and grading notes are never rendered. Attachments select exact current Image/Link targets, validate hashes and ownership, and use `@@PLUGINFILE@@`. Project-relative targets and absolute producer effectiveBase contexts are supported; Moodle does not reopen source files. Source/service paths, target traversal/aliases/collisions, malformed keys, raw markup, rich anchors, citations and unsupported nodes fail before output. This creates a question bank, not a Quiz/Assignment or a live Moodle connection.
+В XML попадают только публичное условие и публичные варианты ответа. Решения
+и заметки преподавателя не рендерятся. Вложения выбираются по точным текущим
+Image/Link target, проверяются по хешу и владельцу и используют `@@PLUGINFILE@@`.
+Допустимы относительные target и абсолютный producer effectiveBase; адаптер
+не открывает исходные файлы повторно. Исходные и служебные пути, обход каталогов,
+алиасы и коллизии target, повреждённые ключи, raw-разметка, сложные якоря,
+цитирования и неподдерживаемые узлы отклоняются до записи XML.
+Это банк вопросов; создание тестов/заданий, права доступа и соединение с LMS
+не входят в экспорт. Локальные проверки не подтверждают импорт в реальный Moodle.
 
 ```sh
 CORE=../quarto-course bash tools/check.sh
+CORE=../quarto-course bash tools/check-demo.sh
 ```
 
-The check installs actual payloads, renders authored native full/student examples, builds current Body packages and validates parsed XML, attachment bytes, grading and installed failure paths with `quarto run tests/installed-cli.ts REPO PACKAGE`. Acceptance versions are Quarto 1.10.18/1.11.5 and CUE 0.17.1. The vendored XML writer avoids npm/network at runtime; vendor rebuilding is a separate maintainer task.
+Проверка устанавливает фактические payload, рендерит native full/student примеры,
+создаёт текущие Body-пакеты и проверяет разобранный XML, байты вложений,
+оценивание и ошибочные пути установленного CLI. Поддерживаемые проверочные
+версии — Quarto 1.10.18/1.11.5 и CUE 0.17.1. Встроенный XML writer не требует
+npm или сети во время работы; его пересборка — отдельная задача сопровождения.
 
-## Release installation
+## Установка выпуска
 
-Release `v0.2.0` matches the version in `_extension.yml`. Install the explicit tag shown above and commit the installed `_extensions` files in the course repository. To upgrade, install the next published tag with `quarto add`, review the changes and run the course checks. Published tags are immutable; corrections receive a new version and tag.
+Выпуск `v0.2.1` соответствует `_extension.yml`. Установите точный тег выше
+и сохраните установленные `_extensions` в репозитории курса. Для обновления
+установите следующий опубликованный тег через `quarto add`, просмотрите изменения
+и выполните проверки курса. Опубликованные теги неизменяемы; исправления получают
+новую версию и тег.
 
+## Общие назначения заданий
 
-## Shared task assignments
-
-Works use one authored `.task-items` list. The transport preserves `items`
-canonical keys and optional `requirements` keyed by local `exr-*` ID, with
-`required` or `optional` values. A lab/test/exam defaults to required; handout
-is an ungraded selection. Additional tasks do not replace required tasks.
-Moodle imports questions only; work metadata does not create assessments or
-translate requirements into a platform grade rule. See the
-[self-contained question demo](examples/questions/README.md).
+Работа использует один авторский список `.task-items`. Transport сохраняет
+канонические ключи `items` и необязательные `requirements` по локальному ID
+`exr-*` со значениями `required` или `optional`. Для lab/test/exam по умолчанию
+задание обязательное; handout — неоцениваемая подборка. Дополнительные задания
+не заменяют обязательные. Moodle импортирует только вопросы: метаданные работы
+не создают активность и не превращают требования в правило платформенного
+оценивания. См. [самостоятельную демонстрацию](examples/questions/README.md).

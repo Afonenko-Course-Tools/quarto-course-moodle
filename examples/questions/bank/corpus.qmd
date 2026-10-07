@@ -1,46 +1,48 @@
-# Questions {#sec-questions}
+# Вопросы {#sec-questions}
 
 :::: {#exr-manual}
-## Explain securely
+## Объясните защиту данных
 
-Explain $x^2 + 1$ using {{literal}} and XML characters & < >.
+Объясните, как формула $x^2 + 1$ может использоваться в учебной модели обработки
+данных. Сопоставьте значения в таблице.
 
-| A | B |
+| Вход | Результат |
 |---|---|
 | 1 | 2 |
 
-[Data](data.txt) and [reference](https://example.org/course#def-one).
+[Учебные данные](data.txt) и [справочный материал](https://example.org/course#def-one).
 
-![Diagram](dot.png)
+![Схема](dot.png)
 
 ::: {.grading-notes}
-GRADING_SECRET
+Оцените полноту объяснения и правильность вычисления.
 :::
 ::::
 
 ::: {#sol-manual}
-TEACHER_SECRET manual explanation.
+При $x=1$ выражение равно 2. Математическая модель сама по себе не обеспечивает
+защиту данных: нужны отдельные меры контроля доступа и безопасной передачи.
 :::
 
 :::: {#exr-choice}
-## Choose protocol
+## Выберите протокол
 
-Choose the secure protocol.
+Выберите протокол защищённой передачи данных.
 
 ::: {.answer type="single-choice"}
-- HTTP & XML
+- HTTP
 - [TLS]{.correct}
-- FTP {{literal}}
+- FTP
 :::
 ::::
 
 ::: {#sol-choice .demo-sol}
-TEACHER_SECRET demo explanation.
+TLS обеспечивает защищённый канал передачи данных.
 :::
 
 :::: {#exr-unused}
-## Wider bank
+## Дополнительный вопрос банка
 
-This unassigned native task contains <span>HTML-only content</span> and remains
-absent from selected deliveries. Its unsupported transport does not block a work.
+Назовите два способа ограничения доступа к учебным материалам. Это упражнение
+не назначено ни одному варианту и не входит в выбранный экспорт.
 ::::

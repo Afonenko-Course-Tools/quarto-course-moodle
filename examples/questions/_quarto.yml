@@ -1,14 +1,15 @@
+lang: ru
 project:
   type: website
   output-dir: _site
   render: [index.qmd]
   resources: [artifacts/**]
 website:
-  title: Moodle question bank
+  title: Банк вопросов Moodle
   repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-moodle
   repo-subdir: examples/questions
   repo-actions: [source]
-  repo-branch: v0.2.0
+  repo-branch: demo-20261007-ru2
 format: html
 course:
   id: demo-moodle

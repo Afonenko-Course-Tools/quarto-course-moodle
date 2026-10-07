@@ -10,7 +10,7 @@ async function extension(base: string, name: string) {
       if (!(e instanceof Deno.errors.NotFound)) throw e;
     }
   }
-  throw Error("Install " + name + " in " + base);
+  throw Error("Установите " + name + " в " + base);
 }
 const core = await extension(join(root, "bank"), "course-core");
 const { collectExport } = await import(
@@ -66,8 +66,8 @@ await Deno.writeTextFile(
           ? new TextDecoder().decode(revision.stdout).trim()
           : ""),
       sourceDirty: Deno.env.get("DEMO_SOURCE_DIRTY") === "true",
-      extensionVersion: "0.2.0",
-      dependencies: { "quarto-course": "3.0.0" },
+      extensionVersion: "0.2.1",
+      dependencies: { "quarto-course": "3.0.2" },
       projection: "full",
       verification: "local installed native build",
       livePlatformVerified: false,
