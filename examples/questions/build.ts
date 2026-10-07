@@ -10,7 +10,7 @@ async function extension(base: string, name: string) {
       if (!(e instanceof Deno.errors.NotFound)) throw e;
     }
   }
-  throw Error("Install " + name + " in " + base);
+  throw Error("Установите " + name + " в " + base);
 }
 const core = await extension(join(root, "bank"), "course-core");
 const { collectExport } = await import(
