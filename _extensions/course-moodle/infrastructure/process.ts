@@ -6,13 +6,14 @@ function externalFailure(
   stderr: string,
   cause?: unknown,
 ): Error {
+  const reason = cause instanceof Error ? cause.message : "";
   const detail = stderr + stdout;
   const error = new Error(
     `Moodle: внешний инструмент ${tool} завершился с ошибкой${
       exitCode === undefined
         ? " запуска или ввода/вывода"
         : ` (код ${exitCode})`
-    }.${detail ? "\n" + detail : ""}`,
+    }.${detail ? "\n" + detail : ""}${reason ? "\n" + reason : ""}`,
     {
       cause: {
         tool,
