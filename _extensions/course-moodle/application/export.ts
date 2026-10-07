@@ -1,6 +1,6 @@
+import { command } from "../infrastructure/process.ts";
 import { create } from "../vendor/xmlbuilder2.js";
 import {
-  command,
   fail,
   resourceTargets,
   validateBody,
