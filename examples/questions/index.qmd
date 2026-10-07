@@ -2,7 +2,7 @@
 code-links:
   - text: Исходники демонстрации
     icon: github
-    href: https://github.com/Afonenko-Course-Tools/quarto-course-moodle/tree/v0.2.0/examples/questions
+    href: https://github.com/Afonenko-Course-Tools/quarto-course-moodle/tree/demo-20261007-ru1/examples/questions
 ---
 
 # Банк вопросов Moodle

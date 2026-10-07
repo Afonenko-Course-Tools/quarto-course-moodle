@@ -9,7 +9,7 @@ book:
   repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-moodle
   repo-subdir: examples/questions/bank
   repo-actions: [source]
-  repo-branch: v0.2.0
+  repo-branch: demo-20261007-ru1
   chapters: [index.qmd, corpus.qmd, control.qmd, variant-a.qmd, variant-b.qmd]
 format: html
 filters: [course-core]

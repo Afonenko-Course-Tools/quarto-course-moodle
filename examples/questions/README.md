@@ -4,9 +4,9 @@
 
 ```sh
 cd bank
-quarto add Afonenko-Course-Tools/quarto-course@v3.0.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course@v3.0.2 --no-prompt
 cd ..
-quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.1 --no-prompt
 quarto run build.ts
 ```
 
@@ -22,7 +22,7 @@ quarto run build.ts
 условие входит в выбранную работу, хотя исключено из student HTML. Дополнительное
 контрольное задание не заменяет обязательное. См. [диагностику](../../docs/diagnostics.md).
 
-Готовый артефакт публикуется отдельно в неизменяемом выпуске `demo-20261007`
+Готовый артефакт публикуется отдельно в неизменяемом выпуске `demo-20261007-ru1`
 из той же merged-ревизии. `BUILD.json` записывает точный commit и зависимости.
 Локальная сборка проверяет XML и HTML; обмен с действующей LMS и фактический
 импорт в Moodle не подтверждаются.

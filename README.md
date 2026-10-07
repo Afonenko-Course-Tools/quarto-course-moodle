@@ -9,7 +9,7 @@ Moodle создаёт XML-банк вопросов из актуального 
 включает контрольные QMD, скрытые в student HTML, и не требует полного HTML-рендера.
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.0 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.1 --no-prompt
 deno run --allow-read --allow-write --allow-run=quarto --allow-env \
   _extensions/Afonenko-Course-Tools/course-moodle/entrypoints/export.ts \
   teacher-package.json binding.json bank.xml
@@ -47,7 +47,7 @@ npm или сети во время работы; его пересборка �
 
 ## Установка выпуска
 
-Выпуск `v0.2.0` соответствует `_extension.yml`. Установите точный тег выше
+Выпуск `v0.2.1` соответствует `_extension.yml`. Установите точный тег выше
 и сохраните установленные `_extensions` в репозитории курса. Для обновления
 установите следующий опубликованный тег через `quarto add`, просмотрите изменения
 и выполните проверки курса. Опубликованные теги неизменяемы; исправления получают
