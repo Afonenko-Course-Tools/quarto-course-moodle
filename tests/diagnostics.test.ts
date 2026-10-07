@@ -80,3 +80,39 @@ Deno.test("hash mismatch identifies resource source and hash field", async () =>
   p.resources[0].effectiveBase = "resources";
   await refused(p, { defaultGrade: 1, shuffle: false }, "data.txt", "sha256");
 });
+Deno.test("malformed resource encoding retains its cause and resource context", async () => {
+  const p: any = sample();
+  p.resources = [{
+    owner: p.owner,
+    source: "bytes.txt",
+    effectiveBase: "resources",
+    target: "resources/bytes.txt",
+    sha256: "0".repeat(64),
+    data: "***",
+    visibility: "public",
+  }];
+  try {
+    await exportMoodle(p, { defaultGrade: 1, shuffle: false });
+    throw Error("expected encoding diagnostic");
+  } catch (error) {
+    assert(
+      error instanceof Error && error.name === "ExtensionDiagnostic" &&
+        error.cause instanceof DOMException,
+    );
+    assert(
+      error.message.includes("bytes.txt") && error.message.includes("data"),
+    );
+  }
+});
+Deno.test("duplicate question diagnostic relates the original source", async () => {
+  const p = sample();
+  p.questions.push({ ...p.questions[0], source: "other.qmd" });
+  await refused(
+    p,
+    { defaultGrade: 1, shuffle: false },
+    "other.qmd",
+    "Связано:",
+    "index.qmd",
+    "owner/key",
+  );
+});

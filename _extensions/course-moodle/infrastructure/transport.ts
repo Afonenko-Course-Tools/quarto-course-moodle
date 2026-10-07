@@ -243,7 +243,19 @@ function assertPackage(p: unknown): asserts p is BodyPackage {
     ) {
       fail(
         "Некорректные owner/key или повтор вопроса",
-        objectContext(q, "owner/key"),
+        {
+          ...objectContext(q, "owner/key"),
+          ...(record(q) && typeof q.key === "string" && keys.has(q.key)
+            ? {
+              related: [objectContext(
+                p.questions.find((other) =>
+                  record(other) && other.key === q.key
+                ),
+                "owner/key",
+              )],
+            }
+            : {}),
+        },
       );
     }
     keys.add(q.key);
@@ -404,8 +416,8 @@ export async function verifyResources(p: BodyPackage) {
     let bytes: Uint8Array;
     try {
       bytes = Uint8Array.from(atob(r.data), (c) => c.charCodeAt(0));
-    } catch {
-      fail("Некорректная кодировка ресурса", objectContext(r, "data"));
+    } catch (cause) {
+      fail("Некорректная кодировка ресурса", objectContext(r, "data"), cause);
     }
     const hash = Array.from(
       new Uint8Array(
