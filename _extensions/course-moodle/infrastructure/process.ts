@@ -33,6 +33,7 @@ export async function command(
   cwd?: string,
 ): Promise<string> {
   let out: Deno.CommandOutput;
+  let inputCause: unknown;
   try {
     const p = new Deno.Command(cmd, {
       args,
@@ -43,8 +44,17 @@ export async function command(
     }).spawn();
     if (input !== undefined) {
       const w = p.stdin.getWriter();
-      await w.write(new TextEncoder().encode(input));
-      await w.close();
+      try {
+        await w.write(new TextEncoder().encode(input));
+        await w.close();
+      } catch (cause) {
+        if (!Object.values(Deno.errors).some((kind) => cause instanceof kind)) {
+          throw cause;
+        }
+        inputCause = cause;
+      } finally {
+        w.releaseLock();
+      }
     }
     out = await p.output();
   } catch (cause) {
@@ -56,6 +66,8 @@ export async function command(
   }
   const stdout = new TextDecoder().decode(out.stdout);
   const stderr = new TextDecoder().decode(out.stderr);
-  if (!out.success) throw externalFailure(cmd, out.code, stdout, stderr);
+  if (!out.success || inputCause !== undefined) {
+    throw externalFailure(cmd, out.code, stdout, stderr, inputCause);
+  }
   return stdout;
 }

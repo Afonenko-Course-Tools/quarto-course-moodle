@@ -60,3 +60,20 @@ Deno.test("programmer TypeError remains unknown with its stack", async () => {
     );
   }
 });
+Deno.test("early process exit still retains exit and streams after broken stdin", async () => {
+  try {
+    await command(Deno.execPath(), [
+      "eval",
+      "console.log('EARLY_OUT'); console.error('EARLY_ERR'); Deno.exit(31)",
+    ], "x".repeat(2_000_000));
+    throw Error("expected external failure");
+  } catch (error) {
+    assert(error instanceof Error && error.name === "ExternalToolFailure");
+    const cause = error.cause as any;
+    assert(
+      cause.exitCode === 31 && cause.stdout === "EARLY_OUT\n" &&
+        cause.stderr === "EARLY_ERR\n",
+    );
+    assert(cause.cause instanceof Deno.errors.BrokenPipe);
+  }
+});
