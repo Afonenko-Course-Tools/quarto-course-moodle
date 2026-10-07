@@ -1,4 +1,13 @@
+---
+type: documentation
+component: course-moodle
+status: current
+updated: 2026-10-08
+---
+
 # Quarto Course Moodle
+
+[Индекс спецификаций](spec/index.md) различает действующий контракт, согласованную следующую модель и историю. Версия на выбранном ref читается из `_extensions/course-moodle/_extension.yml`; `main` после последнего выпуска — **unreleased**.
 
 Moodle создаёт XML-банк вопросов из актуального teacher-пакета Core
 `course-body-package-v1`. Сначала вызовите
