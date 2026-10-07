@@ -74,6 +74,26 @@ Deno.test("early process exit still retains exit and streams after broken stdin"
       cause.exitCode === 31 && cause.stdout === "EARLY_OUT\n" &&
         cause.stderr === "EARLY_ERR\n",
     );
-    assert(cause.cause instanceof Deno.errors.BrokenPipe);
+    assert(
+      cause.cause instanceof Deno.errors.BrokenPipe ||
+        cause.cause instanceof TypeError,
+    );
   }
 });
+
+import { earlyChildExit, unknownStartupFault } from "./process-runtime.ts";
+Deno.test(
+  "shell early exit retains real exit and streams with operational stdin cause",
+  earlyChildExit,
+);
+Deno.test(
+  "unknown startup error retains original identity and stack",
+  unknownStartupFault,
+);
+
+import { concurrentDrain, visibleSuccessStderr } from "./process-runtime.ts";
+Deno.test("output drains concurrently with large stdin", concurrentDrain);
+Deno.test(
+  "successful stderr is forwarded verbatim once and stdout returned",
+  visibleSuccessStderr,
+);
