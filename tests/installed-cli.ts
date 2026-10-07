@@ -165,7 +165,7 @@ async function check(repo: string, packagePath: string) {
     }).output();
     assert(
       !damaged.success &&
-        new TextDecoder().decode(damaged.stderr).includes("hash mismatch"),
+        new TextDecoder().decode(damaged.stderr).includes("Хеш ресурса не совпадает"),
       "damaged resource accepted",
     );
     assert(

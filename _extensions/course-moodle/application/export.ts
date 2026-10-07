@@ -1,6 +1,7 @@
+import { objectContext } from "../infrastructure/diagnostics.ts";
+import { command } from "../infrastructure/process.ts";
 import { create } from "../vendor/xmlbuilder2.js";
 import {
-  command,
   fail,
   resourceTargets,
   validateBody,
@@ -14,14 +15,25 @@ export async function exportMoodle(p: any, binding: any): Promise<string> {
     !Number.isFinite(binding.defaultGrade) || binding.defaultGrade <= 0 ||
     typeof binding.shuffle !== "boolean"
   ) {
-    fail("explicit defaultGrade and shuffle binding required");
+    fail("Требуются явные defaultGrade и shuffle в binding", {
+      field: typeof binding?.defaultGrade !== "number" ||
+          !Number.isFinite(binding.defaultGrade) || binding.defaultGrade <= 0
+        ? "binding.defaultGrade"
+        : "binding.shuffle",
+      hint:
+        "Укажите положительное конечное число defaultGrade и boolean shuffle (true/false).",
+    });
   }
   for (const q of p.questions) {
     if (!["manual", "single-choice"].includes(q.answerType)) {
-      fail("unsupported answer type " + q.answerType);
+      fail("Неподдерживаемый тип ответа " + q.answerType, {
+        ...objectContext(q, "answerType"),
+        hint:
+          "Для Moodle выберите manual или single-choice; другие типы не поддерживаются.",
+      });
     }
-    validateBody(q.condition, p.resources);
-    validateBody(q.publicAnswer, p.resources);
+    validateBody(q.condition, p.resources, objectContext(q, "condition"));
+    validateBody(q.publicAnswer, p.resources, objectContext(q, "publicAnswer"));
     if (
       q.answerType === "single-choice" &&
       (q.publicAnswer.length !== 1 || q.publicAnswer[0]?.t !== "BulletList" ||
@@ -33,7 +45,13 @@ export async function exportMoodle(p: any, binding: any): Promise<string> {
           !Array.isArray(choice) || !choice.length ||
           choice.some((node: any) => !node || typeof node.t !== "string")
         ))
-    ) fail("invalid single-choice mapping");
+    ) {
+      fail("Некорректное сопоставление single-choice", {
+        ...objectContext(q, "closedKey.correct/publicAnswer"),
+        hint:
+          "Задайте не менее двух native вариантов и целый closedKey.correct от 0 до последнего индекса.",
+      });
+    }
   }
   await verifyResources(p);
   const html = async (blocks: any[]) => {
