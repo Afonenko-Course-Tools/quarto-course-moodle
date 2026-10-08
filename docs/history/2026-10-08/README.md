@@ -44,3 +44,15 @@ exact source/hash/mtime map остаётся
 удаление/архивация веток и worktrees относится только к финальному шагу 17.
 
 Снимки восстанавливаются командой `git show 82474c571c0b5aceae2815072a520c7bfb32cfd6:docs/history/2026-10-08/snapshots/root/<исходный-путь>`. Первоначальные owner-планы доступны в том же коммите по прежнему пути `docs/plans/`; свежая upstream версия сохраняется также в origin/main и merge history.
+
+## Подготовка авторства 8 октября
+
+Переходный `docs/authoring-next.md` перенесён в действующие тематические документы.
+Точные исходные bytes сохранены в Git: commit `b374f853e87961bd2d0ac61e456893d446594527`,
+blob `9a0d120d8e1ce9446ce0f7ae22a3edc33e14ae44`. Восстановление без изменения рабочего дерева:
+
+```sh
+git show b374f853e87961bd2d0ac61e456893d446594527:docs/authoring-next.md
+```
+
+[Исходная подготовка](https://github.com/Afonenko-Course-Tools/quarto-course-moodle/blob/b374f853e87961bd2d0ac61e456893d446594527/docs/authoring-next.md) остаётся историей этого владельца.
