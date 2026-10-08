@@ -18,9 +18,9 @@ updated: 2026-10-08
 | [Диагностика](../docs/diagnostics.md) | reference | course-moodle | current | Собственные ID и внешние причины этого адаптера |
 | [Body Core](../../quarto-course/docs/body-export.md) | specification | course-core | current | Общий producer transport и selected source input |
 | [Авторская модель Core](../../quarto-course/spec/index.md) | specification/index | course-core | current | Банк, условия, решения и назначения |
-| [План владельца](../docs/plans/2026-10-08-implementation.md) | plan | course-moodle | in-progress | Шаги 9 и завершение общего маршрута |
-| [Карта сохранённой истории](../docs/history/2026-10-08/README.md) | history | course-moodle | historical | Исходные планы, probes/evidence, refs и provenance |
+| [Результат реализации](../docs/releases/2026-10-08-implementation.md) | implementation-report | course-moodle | historical | Шаги 9 и завершение общего маршрута |
+| [Карта сохранённой истории](https://github.com/Afonenko-Course-Tools/quarto-course-moodle/blob/95bd32d6c723868377480b7ef6add79d1e2d7694/docs/history/2026-10-08/README.md) | history | course-moodle | historical | Исходные планы, probes/evidence, refs и provenance |
 
 Банк и назначения принадлежат текущему Core; этот адаптер проверяет свой вход
 на собственной границе. Порядок выпуска и финальные проверки сохраняются в
-[плане владельца](../docs/plans/2026-10-08-implementation.md).
+[отчёте реализации](../docs/releases/2026-10-08-implementation.md).
