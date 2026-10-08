@@ -56,6 +56,16 @@ Deno.test("native manual and single-choice package creates exactly two genuine X
   assert(xml.includes("@@PLUGINFILE@@"));
   assert(xml.includes("{{literal}}"));
   assert(!xml.includes("TEACHER_SECRET") && !xml.includes("GRADING_SECRET"));
+  assert(
+    !xml.includes("PREVIEW_MUST_NOT_EXPORT") &&
+      !xml.includes("OUTER_PROSE_MUST_NOT_EXPORT"),
+    "page prose leaked into questiontext",
+  );
+  assert(xml.includes("Reasoning details"), "internal condition heading lost");
+  assert(
+    (xml.match(/fraction="100"/g) || []).length === 1,
+    "correct choice count changed",
+  );
   const questions = children(quiz(xml), "question");
   assert(questions.length === 2, "XML question count changed");
   assert(text(children(questions[1], "answer")[1], "text").includes("TLS"));

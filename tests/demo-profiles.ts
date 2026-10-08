@@ -1,5 +1,6 @@
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { children, quiz } from "./xml.ts";
 const [name, root, evidence, mode] = Deno.args;
 const bank = join(root, "bank"), failures: string[] = [];
 await Deno.mkdir(evidence, { recursive: true });
@@ -23,9 +24,6 @@ const condition = name === "print"
   ? "Объясните, почему публичные стартовые материалы не содержат эталонных решений."
   : "Объясните, почему публичный комплект студента не содержит эталонные решения.";
 const forbidden = [
-  "control.html",
-  "variant-a.html",
-  "variant-b.html",
   "Объясните границу доступа",
   condition,
   "Оцените полноту объяснения",
@@ -47,15 +45,13 @@ for (const [i, profile] of ["student", "full", "student"].entries()) {
   );
   const chapters = config.book.chapters;
   const actualOutput = resolve(bank, config.project["output-dir"] ?? "_book");
-  const expectedChapters = profile === "student"
-    ? ["index.qmd", "corpus.qmd"]
-    : [
-      "index.qmd",
-      "corpus.qmd",
-      "control.qmd",
-      "variant-a.qmd",
-      "variant-b.qmd",
-    ];
+  const expectedChapters = [
+    "index.qmd",
+    "corpus.qmd",
+    "control.qmd",
+    "variant-a.qmd",
+    "variant-b.qmd",
+  ];
   if (JSON.stringify(chapters) !== JSON.stringify(expectedChapters)) {
     failures.push(
       `${profile}: native chapters ${JSON.stringify(chapters)} instead of ${
@@ -87,14 +83,10 @@ for (const [i, profile] of ["student", "full", "student"].entries()) {
     }
   }
   if (profile === "student") {
-    for (const file of existing) {
-      if (["control.html", "variant-a.html", "variant-b.html"].includes(file)) {
-        failures.push(
-          `${profile}: full-only HTML remains in student output ${file}`,
-        );
-      }
+    if (existing.length !== 5) {
+      failures.push(`student: expected five authored pages, got ${existing}`);
     }
-    for (const file of ["index.html", "corpus.html", "search.json"]) {
+    for (const file of [...existing, "search.json"]) {
       const text = await Deno.readTextFile(join(actualOutput, file));
       for (const phrase of forbidden) {
         if (text.includes(phrase)) {
@@ -165,6 +157,32 @@ if (mode === "--render-group") {
         failures.push(
           `selected ROOT build ${variant}: public control condition missing`,
         );
+      }
+      const questions = children(quiz(xml), "question");
+      if (questions.length !== 2) {
+        failures.push(
+          `selected ROOT ${variant}: XML question count ${questions.length}`,
+        );
+      }
+      if (
+        variant === "b" && (xml.match(/fraction="100"/g) ?? []).length !== 1
+      ) {
+        failures.push(
+          "selected ROOT b: expected exactly one teacher keyed choice",
+        );
+      }
+      for (
+        const marker of [
+          "Оцените полноту объяснения",
+          "Математическая модель сама по себе не обеспечивает",
+          "Общий открытый разбор",
+        ]
+      ) {
+        if (xml.includes(marker)) {
+          failures.push(
+            `selected ROOT ${variant}: preview/teacher prose leaked: ${marker}`,
+          );
+        }
       }
       const correctAnswer =
         xml.split('<answer fraction="100"')[1]?.split("</answer>")[0] ?? "";

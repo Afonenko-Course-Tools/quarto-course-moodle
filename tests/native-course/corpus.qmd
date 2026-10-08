@@ -1,7 +1,9 @@
 # Questions {#sec-questions}
 
-:::: {#exr-manual target="manual" course-role="independent-study" difficulty="introductory"}
+:::: {#exr-manual target="manual" course-role="independent-study" difficulty="introductory" time="10"}
 ## Explain securely
+
+### Reasoning details
 
 Explain $x^2 + 1$ using {{literal}} and XML characters & < >.
 
@@ -22,7 +24,7 @@ GRADING_SECRET
 TEACHER_SECRET manual explanation.
 :::
 
-:::: {#exr-choice target="manual" course-role="independent-study" difficulty="introductory"}
+:::: {#exr-choice target="manual" course-role="independent-study" difficulty="introductory" time="10"}
 ## Choose protocol
 
 Choose the secure protocol.
@@ -34,6 +36,6 @@ Choose the secure protocol.
 :::
 ::::
 
-::: {#sol-choice .demo-sol}
+::: {#sol-choice}
 TEACHER_SECRET demo explanation.
 :::

@@ -16,6 +16,9 @@ export interface PublicBodyPackage {
     key: string;
     source: string;
     visibility: "public";
+    statementVisibility: "open" | "restricted";
+    purpose?: "demonstration" | "discussion" | "independent-study" | "control";
+    hasPublicSolution: boolean;
     answerType:
       | "manual"
       | "single-choice"
@@ -30,10 +33,15 @@ export interface PublicBodyPackage {
     id: string;
     key: string;
     source: string;
-    kind: "lab" | "test" | "exam" | "handout";
+    kind: "lab" | "seminar" | "practical" | "test";
     title: string;
     items: string[];
-    requirements?: Record<string, "required" | "optional">;
+    assignments: Record<string, {
+      stage?: "demonstration" | "classroom" | "homework";
+      requirement: "required" | "optional";
+      workMode: "individual" | "pair" | "group";
+    }>;
+    theoryTime?: number;
   }[];
   resources: {
     owner: string;
@@ -45,7 +53,13 @@ export interface PublicBodyPackage {
     visibility: "public";
   }[];
 }
-export type BodyPackage = PublicBodyPackage;
+export type BodyPackage = Omit<PublicBodyPackage, "questions"> & {
+  questions: (PublicBodyPackage["questions"][number] & {
+    closedKey?: Record<string, unknown> | null;
+    solution?: unknown[];
+    gradingNotes?: unknown[];
+  })[];
+};
 export type PrintResource = BodyPackage["resources"][number];
 export function fail(
   detail: string,
@@ -132,6 +146,9 @@ function validateProduction(
         "key",
         "source",
         "visibility",
+        "statementVisibility",
+        "hasPublicSolution",
+        ...(record(q) && Object.hasOwn(q, "purpose") ? ["purpose"] : []),
         "answerType",
         "condition",
         "publicAnswer",
@@ -145,6 +162,13 @@ function validateProduction(
     if (
       typeof q.id !== "string" || !/^exr-[a-z0-9-]+$/.test(q.id) ||
       !source(q.source) || q.visibility !== "public" ||
+      (typeof q.statementVisibility !== "string" ||
+        !["open", "restricted"].includes(q.statementVisibility)) ||
+      typeof q.hasPublicSolution !== "boolean" ||
+      (q.purpose !== undefined &&
+        (typeof q.purpose !== "string" ||
+          !["demonstration", "discussion", "independent-study", "control"]
+            .includes(q.purpose))) ||
       typeof q.answerType !== "string" ||
       !["manual", "single-choice", "numeric", "multipart", "matching"].includes(
         q.answerType,
@@ -174,34 +198,84 @@ function validateProduction(
         "kind",
         "title",
         "items",
-        ...(record(w) && Object.hasOwn(w, "requirements")
-          ? ["requirements"]
-          : []),
+        "assignments",
+        ...(record(w) && Object.hasOwn(w, "theoryTime") ? ["theoryTime"] : []),
       ]) ||
       w.owner !== p.owner || typeof w.id !== "string" ||
       !/^[a-z][a-z0-9-]*$/.test(w.id) ||
       w.key !== p.owner + "/" + w.id || !source(w.source) ||
       typeof w.kind !== "string" ||
-      !["lab", "test", "exam", "handout"].includes(w.kind) ||
+      !["lab", "seminar", "practical", "test"].includes(w.kind) ||
       typeof w.title !== "string" || !w.title.trim() ||
       !array(w.items) || !w.items.length
     ) {
       fail("Некорректные данные работы", objectContext(w, "works"));
     }
     if (
-      Object.hasOwn(w, "requirements") && (
-        !record(w.requirements) ||
-        Object.entries(w.requirements).some(([id, requirement]) =>
-          !/^exr-[a-z0-9-]+$/.test(id) ||
-          !(w.items as unknown[]).includes(p.owner + "/" + id) ||
-          !["required", "optional"].includes(String(requirement))
-        )
+      !record(w.assignments) ||
+      Object.keys(w.assignments).length !== w.items.length ||
+      (w.items as unknown[]).some((key) =>
+        typeof key !== "string" || !Object.hasOwn(w.assignments as object, key)
+      ) ||
+      Object.entries(w.assignments).some(([key, assignment]) =>
+        !(w.items as unknown[]).includes(key) ||
+        !fields(assignment, [
+          "requirement",
+          "workMode",
+          ...(record(assignment) && Object.hasOwn(assignment, "stage")
+            ? ["stage"]
+            : []),
+        ]) ||
+        (typeof assignment.requirement !== "string" ||
+          !["required", "optional"].includes(assignment.requirement)) ||
+        (typeof assignment.workMode !== "string" ||
+          !["individual", "pair", "group"].includes(assignment.workMode)) ||
+        (Object.hasOwn(assignment, "stage") &&
+          (typeof assignment.stage !== "string" ||
+            !["demonstration", "classroom", "homework"].includes(
+              assignment.stage,
+            )))
       )
     ) {
       fail(
-        "Некорректные требования к заданиям",
-        objectContext(w, "requirements"),
+        "Некорректные назначения: требуются точные qualified keys состава и stage/requirement/workMode",
+        objectContext(w, "assignments"),
       );
+    }
+    if (
+      Object.hasOwn(w, "theoryTime") &&
+      (typeof w.theoryTime !== "number" || !Number.isFinite(w.theoryTime) ||
+        w.theoryTime <= 0)
+    ) {
+      fail(
+        "Время теории должно быть положительным конечным числом",
+        objectContext(w, "theoryTime"),
+      );
+    }
+    for (const key of w.items as string[]) {
+      const q = p.questions.find((q) => record(q) && q.key === key);
+      if (!record(q)) continue; // Membership is checked independently below.
+      if (
+        ["test", "practical"].includes(w.kind) &&
+        q.statementVisibility !== "restricted"
+      ) {
+        fail(
+          "В test/practical назначаются только restricted условия",
+          objectContext(w, "items/statementVisibility"),
+        );
+      }
+      const assignment =
+        (w.assignments as Record<string, Record<string, unknown>>)[key];
+      if (
+        assignment.stage === "demonstration" &&
+        (q.statementVisibility !== "open" || q.purpose !== "demonstration" ||
+          q.hasPublicSolution !== true)
+      ) {
+        fail(
+          "Демонстрационное назначение требует open условия, роли demonstration и публичного решения",
+          objectContext(w, "assignments.stage"),
+        );
+      }
     }
   }
 }
@@ -325,7 +399,7 @@ export function validatePackage(input: unknown): BodyPackage {
   });
   const p = { ...input, questions };
   assertPackage(p);
-  return p;
+  return input as unknown as BodyPackage;
 }
 const allowed = new Set(
   "Str Space SoftBreak LineBreak Emph Strong Underline Strikeout Superscript Subscript SmallCaps Quoted Code Math Link Image Span Para Plain BlockQuote OrderedList BulletList DefinitionList HorizontalRule Table Figure Header Div CodeBlock AlignLeft AlignRight AlignCenter AlignDefault ColWidth ColWidthDefault Decimal DefaultStyle DefaultDelim Period OneParen TwoParens InlineMath DisplayMath SingleQuote DoubleQuote"

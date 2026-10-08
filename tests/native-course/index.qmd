@@ -1,0 +1,3 @@
+# Native Moodle bank
+
+Native test bank with participant-safe export and closed teacher partitions.

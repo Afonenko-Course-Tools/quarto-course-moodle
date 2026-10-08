@@ -1,9 +1,13 @@
 project:
-  type: website
+  type: book
   output-dir: _site
-  render: [corpus.qmd, work-one.qmd, work-two.qmd]
   pre-render: _extensions/course-core/entrypoints/pre.ts
   post-render: _extensions/course-core/entrypoints/post.ts
+book:
+  title: Native Moodle bank
+  chapters: [index.qmd, corpus.qmd, work-one.qmd, work-two.qmd]
+exercise-bank: true
+exercise-statement-visibility: restricted
 format: html
 course:
   id: course-a
