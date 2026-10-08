@@ -1,11 +1,17 @@
 ---
 assessment:
-  kind: lab
+  kind: test
 ---
 
 # Practice & review {#sec-work-one}
 
 ::: {.task-items}
-1. @exr-manual
-2. @exr-choice
+1. [@exr-manual]{work-mode="pair"}
+2. [@exr-choice]{requirement="optional"}
 :::
+
+::: {.assessment-preview}
+PREVIEW_MUST_NOT_EXPORT: student preparation.
+:::
+
+OUTER_PROSE_MUST_NOT_EXPORT

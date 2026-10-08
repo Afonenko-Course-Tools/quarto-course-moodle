@@ -1,0 +1,161 @@
+{
+  "type": "inventory",
+  "component": "course-moodle",
+  "status": "historical",
+  "captured_at": "2026-10-07T23:40:37.112909+00:00",
+  "initial_checkout_branch": "main",
+  "preservation_branch": "feat/authoring-model-20261008",
+  "initial_head": "42c8709d4b8be985796f894084400a8e8c8d44ab",
+  "fetched_origin_main": "6ca11a0d0f9fc442b19bceca2ae0491f3fd96203",
+  "refs": [
+    {
+      "ref": "refs/heads/feat/authoring-model-20261008",
+      "sha": "42c8709d4b8be985796f894084400a8e8c8d44ab",
+      "upstream": null,
+      "main_only": 10,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/heads/feat/course-contract-20261006",
+      "sha": "063f30e00373c3b8e3472a7abfdfcfd11cc26170",
+      "upstream": "origin/feat/course-contract-20261006",
+      "main_only": 11,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/heads/feat/installed-contract-ci",
+      "sha": "58d988ba1ee0ba940a0bf409e57af9c7fec595f8",
+      "upstream": "origin/feat/installed-contract-ci",
+      "main_only": 26,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/heads/main",
+      "sha": "42c8709d4b8be985796f894084400a8e8c8d44ab",
+      "upstream": "origin/main",
+      "main_only": 10,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/HEAD",
+      "sha": "6ca11a0d0f9fc442b19bceca2ae0491f3fd96203",
+      "upstream": null,
+      "main_only": 0,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/feat/course-contract-20261006",
+      "sha": "063f30e00373c3b8e3472a7abfdfcfd11cc26170",
+      "upstream": null,
+      "main_only": 11,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/feat/course-system-final",
+      "sha": "31d94caf14e0b6e5295fabc0ff875437a7787eef",
+      "upstream": null,
+      "main_only": 24,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/feat/versioned-releases",
+      "sha": "6801145746efb9197dfb99ccb50bb83c16dffb28",
+      "upstream": null,
+      "main_only": 15,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/main",
+      "sha": "6ca11a0d0f9fc442b19bceca2ae0491f3fd96203",
+      "upstream": null,
+      "main_only": 0,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/remotes/origin/refactor/native-quarto-20261005",
+      "sha": "e1dd287d1f9f84b52b9661f3a6343c404b3d30b8",
+      "upstream": null,
+      "main_only": 20,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/demo-20261007",
+      "sha": "42c8709d4b8be985796f894084400a8e8c8d44ab",
+      "upstream": null,
+      "main_only": 10,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/demo-20261007-ru1",
+      "sha": "2776107c33f837aaca12aa13a5d705f7308942ba",
+      "upstream": null,
+      "main_only": 2,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/demo-20261007-ru2",
+      "sha": "6ca11a0d0f9fc442b19bceca2ae0491f3fd96203",
+      "upstream": null,
+      "main_only": 0,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/v0.1.1",
+      "sha": "e6c2ec6336698f279f0ac2de40e4719090cf368d",
+      "upstream": null,
+      "main_only": 14,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/v0.2.0",
+      "sha": "42c8709d4b8be985796f894084400a8e8c8d44ab",
+      "upstream": null,
+      "main_only": 10,
+      "ref_only": 0
+    },
+    {
+      "ref": "refs/tags/v0.2.1",
+      "sha": "2776107c33f837aaca12aa13a5d705f7308942ba",
+      "upstream": null,
+      "main_only": 2,
+      "ref_only": 0
+    }
+  ],
+  "worktrees": [
+    {
+      "path": "/home/tolya/course-tools/quarto-course-moodle",
+      "porcelain": "worktree /home/tolya/course-tools/quarto-course-moodle\nHEAD 42c8709d4b8be985796f894084400a8e8c8d44ab\nbranch refs/heads/feat/authoring-model-20261008",
+      "status": "?? docs/\n",
+      "untracked": [
+        "docs/history/2026-10-08/snapshots/root/local-evidence/2026-10-06-adapter-architecture.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/RESULT.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/releases/quarto-course-moodle/demo-20261007/notes.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/implementation-2026-10-06/releases/quarto-course-moodle/v0.2.0/notes.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/refactoring-research-2026-10-07/RESULT.md",
+        "docs/history/2026-10-08/snapshots/root/local-evidence/refactoring-research-2026-10-07/plan-validation.json",
+        "docs/history/2026-10-08/snapshots/root/specs/2026-10-04-refactoring-analysis.md",
+        "docs/history/2026-10-08/snapshots/root/specs/course-change-plan.md",
+        "docs/history/2026-10-08/snapshots/root/specs/course-examples-release-plan.md",
+        "docs/history/2026-10-08/snapshots/root/specs/quarto-tools-plan.md",
+        "docs/plans/2026-10-08-implementation.md",
+        "docs/plans/diagnostics-refactoring-plan.md"
+      ]
+    }
+  ],
+  "ignored_count": 137,
+  "ignored_categories": {
+    "cache: retained locally, reproducible": 12,
+    "installed dependency: retained locally": 73,
+    "generated result: retained locally": 52
+  },
+  "ignored_reviewed_separately": [],
+  "ignored_receipts": [
+    {
+      "path": "examples/questions/_site/BUILD.json",
+      "bytes": 342,
+      "sha256": "4300a5e96ffbcc1c7a2b49705bc9160c77f8afbaa7bd033a11fab9675b5ec283",
+      "disposition": "retained in existing checkout; no cleanup in steps 1–2"
+    }
+  ],
+  "remote_note": "Fetched tags and origin refs on 2026-10-08; stale tracking refs retained for preservation. remote-heads.txt records live heads; old evidence does not establish present CI."
+}

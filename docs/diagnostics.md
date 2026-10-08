@@ -1,3 +1,10 @@
+---
+type: reference
+component: course-moodle
+status: current
+updated: 2026-10-08
+---
+
 # Диагностика Moodle
 
 Собственные ошибки оформлены как `ID: Moodle: смысл`, затем доступные источник,

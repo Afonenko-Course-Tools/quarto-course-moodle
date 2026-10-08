@@ -1,4 +1,16 @@
+---
+type: documentation
+component: course-moodle
+status: current
+updated: 2026-10-08
+---
+
 # Quarto Course Moodle
+
+[Индекс спецификаций](spec/index.md) описывает контракт текущего Git ref.
+Версия определяется descriptor этого ref; код и документация устанавливаемого
+выпуска читаются из одного тега. Изменения main после выпущенного тега —
+**unreleased**. Минимум — Quarto 1.11.5 и CUE 0.17.1.
 
 Moodle создаёт XML-банк вопросов из актуального teacher-пакета Core
 `course-body-package-v1`. Сначала вызовите
@@ -9,7 +21,7 @@ Moodle создаёт XML-банк вопросов из актуального 
 включает контрольные QMD, скрытые в student HTML, и не требует полного HTML-рендера.
 
 ```sh
-quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.2.1 --no-prompt
+quarto add Afonenko-Course-Tools/quarto-course-moodle@v0.3.0 --no-prompt
 deno run --allow-read --allow-write --allow-run=quarto --allow-env \
   _extensions/Afonenko-Course-Tools/course-moodle/entrypoints/export.ts \
   teacher-package.json binding.json bank.xml
@@ -42,23 +54,24 @@ CORE=../quarto-course bash tools/check-demo.sh
 Проверка устанавливает фактические payload, рендерит native full/student примеры,
 создаёт текущие Body-пакеты и проверяет разобранный XML, байты вложений,
 оценивание и ошибочные пути установленного CLI. Поддерживаемые проверочные
-версии — Quarto 1.10.18/1.11.5 и CUE 0.17.1. Встроенный XML writer не требует
+версии — Quarto 1.11.5 и CUE 0.17.1. Встроенный XML writer не требует
 npm или сети во время работы; его пересборка — отдельная задача сопровождения.
 
 ## Установка выпуска
 
-Выпуск `v0.2.1` соответствует `_extension.yml`. Установите точный тег выше
-и сохраните установленные `_extensions` в репозитории курса. Для обновления
-установите следующий опубликованный тег через `quarto add`, просмотрите изменения
-и выполните проверки курса. Опубликованные теги неизменяемы; исправления получают
-новую версию и тег.
+Версия определяется descriptor того же Git ref. Код, descriptor и документация
+установленного выпуска читаются из того же точного тега, что указан в команде.
+Сохраните `_extensions` в Git курса; при обновлении просмотрите diff и выполните
+проверки курса. Опубликованные теги неизменяемы; исправления получают новый тег.
 
 ## Общие назначения заданий
 
-Работа использует один авторский список `.task-items`. Transport сохраняет
-канонические ключи `items` и необязательные `requirements` по локальному ID
-`exr-*` со значениями `required` или `optional`. Для lab/test/exam по умолчанию
-задание обязательное; handout — неоцениваемая подборка. Дополнительные задания
-не заменяют обязательные. Moodle импортирует только вопросы: метаданные работы
-не создают активность и не превращают требования в правило платформенного
-оценивания. См. [самостоятельную демонстрацию](examples/questions/README.md).
+Работа `lab|seminar|practical|test` объединяет один или несколько списков
+`.task-items`. Body сохраняет qualified `items` и обязательную карту
+`assignments` с теми же ключами: `{stage?, requirement, workMode}`. В test/practical
+все назначенные условия restricted. Moodle получает teacher `package` для
+ключа single-choice; Print получает отдельный participant `publicPackage`.
+Решения и gradingNotes не становятся текстом вопроса. Дополнительные задания
+не заменяют обязательные; метаданные работы не создают activity и не превращают
+общую обязательность в правило оценивания LMS. Полные правила —
+[контракт экспорта](spec/export.md). См. [самостоятельную демонстрацию](examples/questions/README.md).

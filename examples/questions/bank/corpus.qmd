@@ -1,6 +1,16 @@
 # Вопросы {#sec-questions}
 
-:::: {#exr-manual}
+:::: {#exr-public-demo difficulty="introductory" time="8" course-role="demonstration"}
+## Проверка значения выражения
+
+Покажите вычисление $x^2 + 1$ при $x=2$.
+
+::: {.solution}
+Получаем $2^2 + 1 = 5$. Сначала выполняем возведение в степень, затем сложение.
+:::
+::::
+
+:::: {#exr-manual difficulty="introductory" time="20" statement-visibility="restricted"}
 ## Объясните защиту данных
 
 Объясните, как формула $x^2 + 1$ может использоваться в учебной модели обработки
@@ -10,7 +20,7 @@
 |---|---|
 | 1 | 2 |
 
-[Учебные данные](data.txt) и [справочный материал](https://example.org/course#def-one).
+[Учебные данные](data.txt).
 
 ![Схема](dot.png)
 
@@ -24,7 +34,7 @@
 защиту данных: нужны отдельные меры контроля доступа и безопасной передачи.
 :::
 
-:::: {#exr-choice}
+:::: {#exr-choice difficulty="introductory" time="5" statement-visibility="restricted"}
 ## Выберите протокол
 
 Выберите протокол защищённой передачи данных.
@@ -36,11 +46,11 @@
 :::
 ::::
 
-::: {#sol-choice .demo-sol}
+::: {#sol-choice}
 TLS обеспечивает защищённый канал передачи данных.
 :::
 
-:::: {#exr-unused}
+:::: {#exr-unused difficulty="intermediate" time="10"}
 ## Дополнительный вопрос банка
 
 Назовите два способа ограничения доступа к учебным материалам. Это упражнение
