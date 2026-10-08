@@ -1,0 +1,10 @@
+{
+  "moodle-questions.tar.gz": {
+    "sha256": "8c441aab45c3b2e30ff10c3ceaea301aea9fb5f7a832a7a6ced3afbdb9513030",
+    "bytes": 369109
+  },
+  "RELEASE.json": {
+    "sha256": "2cabd48bc0d24746e8c18c84c83333d1275c9673b484df73209b5be25cce28db",
+    "bytes": 22879
+  }
+}
