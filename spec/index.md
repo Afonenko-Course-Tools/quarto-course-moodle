@@ -13,6 +13,7 @@ updated: 2026-10-08
 
 | Документ | type | component | status | Нормативный владелец и область |
 | --- | --- | --- | --- | --- |
+| [Подготовка авторства](../docs/authoring-next.md) | authoring-guide | course-moodle | accepted-next | Миграция примеров и граница consumer следующего выпуска |
 | [Moodle: действующий контракт](export.md) | specification | course-moodle | current | teacher Body → XML essay/single-choice; binding и ключ ответа |
 | [Диагностика](../docs/diagnostics.md) | reference | course-moodle | current | Собственные ID и внешние причины этого адаптера |
 | [Body Core](../../quarto-course/docs/body-export.md) | specification | course-core | current | Общий producer transport и selected source input |
