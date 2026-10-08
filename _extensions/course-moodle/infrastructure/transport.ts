@@ -176,7 +176,10 @@ function validateProduction(
     ) {
       fail(
         "Некорректные данные вопроса",
-        objectContext(q, "answerType/source/visibility"),
+        objectContext(
+          q,
+          "answerType/source/visibility/statementVisibility/purpose/hasPublicSolution",
+        ),
       );
     }
     if (!array(q.condition) || !array(q.publicAnswer)) {
@@ -230,7 +233,7 @@ function validateProduction(
           !["required", "optional"].includes(assignment.requirement)) ||
         (typeof assignment.workMode !== "string" ||
           !["individual", "pair", "group"].includes(assignment.workMode)) ||
-        (Object.hasOwn(assignment, "stage") &&
+        (assignment.stage !== undefined &&
           (typeof assignment.stage !== "string" ||
             !["demonstration", "classroom", "homework"].includes(
               assignment.stage,
@@ -243,7 +246,7 @@ function validateProduction(
       );
     }
     if (
-      Object.hasOwn(w, "theoryTime") &&
+      w.theoryTime !== undefined &&
       (typeof w.theoryTime !== "number" || !Number.isFinite(w.theoryTime) ||
         w.theoryTime <= 0)
     ) {

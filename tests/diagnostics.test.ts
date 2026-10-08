@@ -116,3 +116,23 @@ Deno.test("duplicate question diagnostic relates the original source", async () 
     "owner/key",
   );
 });
+
+Deno.test("question policy diagnostics identify new metadata fields", async () => {
+  for (
+    const [field, value] of [
+      ["statementVisibility", "public"],
+      ["purpose", "objectives"],
+      ["hasPublicSolution", "true"],
+    ] as const
+  ) {
+    const p: any = sample();
+    p.questions[0][field] = value;
+    await refused(
+      p,
+      { defaultGrade: 1, shuffle: false },
+      "index.qmd",
+      "exr-manual",
+      field,
+    );
+  }
+});

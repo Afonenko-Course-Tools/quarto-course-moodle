@@ -256,3 +256,42 @@ Deno.test("restricted statement does not permit private visibility or closed con
     assert(refused, "closed payload accepted");
   }
 });
+
+for (const field of ["stage", "theoryTime"] as const) {
+  Deno.test(`Moodle direct API exports optional ${field}: undefined`, async () => {
+    const p: any = sample();
+    if (field === "stage") {
+      p.works[0].assignments["course-a/exr-manual"].stage = undefined;
+    } else {
+      p.works[0].theoryTime = undefined;
+    }
+    assert(validatePackage(p) === p, "teacher package identity changed");
+    const xml = await exportMoodle(p, { defaultGrade: 1, shuffle: false });
+    assert(
+      xml.includes("Public native condition"),
+      "optional field stopped real question export",
+    );
+  });
+}
+Deno.test("optional assignment stage and theory time keep strict non-undefined values", () => {
+  for (
+    const [field, values] of [
+      ["stage", [null, [], ["classroom"], "lecture", 0]],
+      ["theoryTime", [null, [], [10], 0, -1, Infinity, NaN, "10"]],
+    ] as const
+  ) {
+    for (const value of values) {
+      const p: any = sample();
+      if (field === "stage") {
+        p.works[0].assignments["course-a/exr-manual"].stage = value;
+      } else p.works[0].theoryTime = value;
+      let refused = false;
+      try {
+        validatePackage(p);
+      } catch (error) {
+        refused = String(error).includes("ADAPTER");
+      }
+      assert(refused, `malformed optional ${field} accepted`);
+    }
+  }
+});
