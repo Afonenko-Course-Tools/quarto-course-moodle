@@ -1,3 +1,6 @@
+import { createMetrics } from "../observability/bridge.ts";
+const metrics = createMetrics("course-moodle");
+
 /** The process boundary owns external failures; semantic guards stay in transport. */
 function externalFailure(
   tool: string,
@@ -27,7 +30,7 @@ function externalFailure(
   error.name = "ExternalToolFailure";
   return error;
 }
-export async function command(
+async function nativeCommand(
   cmd: string,
   args: string[],
   input?: string,
@@ -39,9 +42,16 @@ export async function command(
     : new TextEncoder().encode(input);
   let p: Deno.ChildProcess;
   try {
+    const base: Record<string, string> = {};
+    const context = metrics.childEnv(base);
+    const childOptions = context === base ? {} : {
+      env: metrics.childEnv(Deno.env.toObject()),
+      clearEnv: true,
+    };
     p = new Deno.Command(cmd, {
       args,
       cwd,
+      ...childOptions,
       stdin: bytes === undefined ? "null" : "piped",
       stdout: "piped",
       stderr: "piped",
@@ -91,3 +101,8 @@ export async function command(
   }
   return stdout;
 }
+
+export const command = metrics.wrapAsync({
+  id: "course-moodle.command", kind: "command",
+  attributes: { phase: "process" },
+}, nativeCommand);

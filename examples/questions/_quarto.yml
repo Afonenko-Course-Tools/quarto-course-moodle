@@ -10,7 +10,7 @@ website:
   repo-url: https://github.com/Afonenko-Course-Tools/quarto-course-moodle
   repo-subdir: examples/questions
   repo-actions: [source]
-  repo-branch: v0.3.0
+  repo-branch: v0.3.1
 format: html
 course:
   id: demo-moodle
